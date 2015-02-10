@@ -1,17 +1,17 @@
 
 /**
- * The Firefeed object is the primary conduit to the data feed. It provides
+ * The PublicPredictions object is the primary conduit to the data feed. It provides
  * functions to login a user, log them out, and most importantly, to register
  * callbacks for events like receiving a new message, or a new suggested user
- * to follow. This object knows nothing about the UI, see firefeed-ui.js for
+ * to follow. This object knows nothing about the UI, see publicpredictions-ui.js for
  * how this object is used to make sure the UI is updated as events come in.
  *
  * @param    {string}    baseURL     The Firebase URL.
  * @param    {boolean}   newContext  Whether a new Firebase context is used.
  *                                   (Useful for testing only)
- * @return   {Firefeed}
+ * @return   {PublicPredictions}
  */
-function Firefeed(baseURL, newContext) {
+function PublicPredictions(baseURL, newContext) {
   var self = this;
   this._name = null;
   this._facebookId = null;
@@ -37,7 +37,7 @@ function Firefeed(baseURL, newContext) {
   this._authHandlers = [];
   this._firebase.onAuth(self._onLoginStateChange.bind(self));
 }
-Firefeed.prototype = {
+PublicPredictions.prototype = {
   _validateCallback: function(cb, notInit) {
     if (!cb || typeof cb != "function") {
       throw new Error("Invalid onComplete callback provided");
@@ -121,7 +121,7 @@ Firefeed.prototype = {
  * object will be null, and the user object will be non-null. If a user is
  * simply logged-out, both the error and user objects will be null.
  */
-Firefeed.prototype.onLoginStateChange = function(onLoginStateChange) {
+PublicPredictions.prototype.onLoginStateChange = function(onLoginStateChange) {
   var self = this;
   self._validateCallback(onLoginStateChange, true);
   this._authHandlers.push(onLoginStateChange);
@@ -136,7 +136,7 @@ Firefeed.prototype.onLoginStateChange = function(onLoginStateChange) {
  *
  * @param    {string}    provider    The authentication provider to use.
  */
-Firefeed.prototype.login = function(provider) {
+PublicPredictions.prototype.login = function(provider) {
   this._firebase.authWithOAuthPopup(provider, this.onLogin.bind(this));
 };
 
@@ -146,7 +146,7 @@ Firefeed.prototype.login = function(provider) {
  * the session data will be cleared and writing data will no longer be
  * permitted, as configured by security rules.
  */
-Firefeed.prototype.logout = function() {
+PublicPredictions.prototype.logout = function() {
   if (this._uid) {
     // Set presence to offline, reset all instance variables, and return!
     var peopleRef = this._firebase.child("people").child(this._uid);
@@ -162,7 +162,7 @@ Firefeed.prototype.logout = function() {
  * so there is no need to do any additional sessioning here.
  */
 
-Firefeed.prototype.onLogin = function(user) {
+PublicPredictions.prototype.onLogin = function(user) {
   var self = this;
   if (!user) { return; }
 
@@ -222,7 +222,7 @@ Firefeed.prototype.onLogin = function(user) {
  * the current user as offline. Firebase Simple Login automatically handles
  * user sessions, so there is no need to do any additional sessioning here.
  */
-Firefeed.prototype.onLogout = function() {
+PublicPredictions.prototype.onLogout = function() {
   this._user = null;
   this._facebookId = null;
   this._mainUser = null;
@@ -249,7 +249,7 @@ Firefeed.prototype.onLogout = function() {
  * @param    {string}    user        The user to get information for.
  * @param    {Function}  onComplete  The callback to call with the user info.
  */
-Firefeed.prototype.getUserInfo = function(user, onComplete,
+PublicPredictions.prototype.getUserInfo = function(user, onComplete,
                                           onFollower, onFollowersComplete,
                                           onFollowee, onFolloweesComplete) {
   var self = this;
@@ -300,11 +300,11 @@ Firefeed.prototype.getUserInfo = function(user, onComplete,
 };
 
 
-Firefeed.prototype.startSearch = function(resultsHandler) {
+PublicPredictions.prototype.startSearch = function(resultsHandler) {
   this._searchHandler = resultsHandler;
 };
 
-Firefeed.prototype.updateSearchTerm = function(term) {
+PublicPredictions.prototype.updateSearchTerm = function(term) {
   var isValidStem = function(stem) {
     var invalid = ['.', '#', '$', '/', '[', ']'];
     for (var i = 0; i < invalid.length; ++i) {
@@ -327,14 +327,14 @@ Firefeed.prototype.updateSearchTerm = function(term) {
       }
     } else {
       // This is a new search
-      this._currentSearch = new FirefeedSearch(this._firebase, term, this._searchHandler);
+      this._currentSearch = new PublicPredictionsSearch(this._firebase, term, this._searchHandler);
     }
   } else {
     this.stopSearching();
   }
 };
 
-Firefeed.prototype.stopSearching = function() {
+PublicPredictions.prototype.stopSearching = function() {
   if (this._currentSearch) {
     this._currentSearch.stopSearch();
     this._currentSearch = null;
@@ -354,7 +354,7 @@ Firefeed.prototype.stopSearching = function() {
  * @param    {string}    id          The spark ID of the spark to be fetched.
  * @param    {Function}  onComplete  The callback to call with the spark.
  */
-Firefeed.prototype.getSpark = function(id, onComplete) {
+PublicPredictions.prototype.getSpark = function(id, onComplete) {
   var self = this;
   self._validateCallback(onComplete, true);
   self._firebase.child("sparks").child(id).once("value", function(snap) {
@@ -371,7 +371,7 @@ Firefeed.prototype.getSpark = function(id, onComplete) {
  * @param    {string}    user        The user to follow.
  * @param    {Function}  onComplete  The callback to call when follow is done.
  */
-Firefeed.prototype.follow = function(user, onComplete) {
+PublicPredictions.prototype.follow = function(user, onComplete) {
   var self = this;
   self._validateString(user, "user");
   self._validateCallback(onComplete);
@@ -412,7 +412,7 @@ Firefeed.prototype.follow = function(user, onComplete) {
  * @param    {string}    content     The content of the spark in text form.
  * @param    {Function}  onComplete  The callback to call when the post is done.
  */
-Firefeed.prototype.post = function(content, onComplete) {
+PublicPredictions.prototype.post = function(content, onComplete) {
   var self = this;
   self._validateString(content, "spark");
   self._validateCallback(onComplete);
@@ -490,7 +490,7 @@ Firefeed.prototype.post = function(content, onComplete) {
  * @param    {Function}  onSuggestedUser  The callback to call for each
  *                                        suggested user.
  */
-Firefeed.prototype.getSuggestedUsers = function(onSuggestedUser) {
+PublicPredictions.prototype.getSuggestedUsers = function(onSuggestedUser) {
   var self = this;
   self._validateCallback(onSuggestedUser);
 
@@ -537,7 +537,7 @@ Firefeed.prototype.getSuggestedUsers = function(onSuggestedUser) {
  * @param    {string}    field       The name of the field (e.g. 'bio').
  * @param    {Object}    value       The new value to write.
  */
-Firefeed.prototype.setProfileField = function(field, value) {
+PublicPredictions.prototype.setProfileField = function(field, value) {
   var peopleRef = this._firebase.child("people").child(this._uid);
   peopleRef.child(field).set(value);
 };
@@ -545,7 +545,7 @@ Firefeed.prototype.setProfileField = function(field, value) {
 /**
  * Register a callback to be notified whenever a new spark appears on the
  * current user's list. This is usually triggered by another user posting a
- * spark (see Firefeed.post), which will appear in real-time on the current
+ * spark (see PublicPredictions.post), which will appear in real-time on the current
  * user's feed!
  *
  * You can limit the number of sparks that you'll get by passing a number as
@@ -584,7 +584,7 @@ Firefeed.prototype.setProfileField = function(field, value) {
  *                                   the spark ID of the spark expected to
  *                                   removed (the oldest spark).
  */
-Firefeed.prototype.onNewSpark = function(totalCount, onComplete, onOverflow) {
+PublicPredictions.prototype.onNewSpark = function(totalCount, onComplete, onOverflow) {
   this._validateCallback(onComplete);
   this._validateCallback(onOverflow);
 
@@ -612,7 +612,7 @@ Firefeed.prototype.onNewSpark = function(totalCount, onComplete, onOverflow) {
  * @param    {Function}  onOverflow  The callback that will be called when
  *                                   a spark needs to be evicted.
  */
-Firefeed.prototype.onNewSparkFor = function(id, count, onComplete, onOverflow) {
+PublicPredictions.prototype.onNewSparkFor = function(id, count, onComplete, onOverflow) {
   this._validateCallback(onComplete, true);
   this._validateCallback(onOverflow, true);
 
@@ -637,7 +637,7 @@ Firefeed.prototype.onNewSparkFor = function(id, count, onComplete, onOverflow) {
  *                                   a spark needs to be evicted from the
  *                                   latest set.
  */
-Firefeed.prototype.onLatestSpark = function(count, onComplete, onOverflow) {
+PublicPredictions.prototype.onLatestSpark = function(count, onComplete, onOverflow) {
   this._validateCallback(onComplete, true);
   this._validateCallback(onOverflow, true);
 
@@ -651,9 +651,9 @@ Firefeed.prototype.onLatestSpark = function(count, onComplete, onOverflow) {
  * Unload all event handlers currently registered. You must call this function
  * when you no longer want to receive updates. This is especially important
  * for single page apps, when transistioning between views. It is safe to
- * reuse the Firefeed object after calling this and registering new handlers.
+ * reuse the PublicPredictions object after calling this and registering new handlers.
  */
-Firefeed.prototype.unload = function() {
+PublicPredictions.prototype.unload = function() {
   for (var i = 0; i < this._handlers.length; i++) {
     var ref = this._handlers[i].ref;
     var handler = this._handlers[i].handler;

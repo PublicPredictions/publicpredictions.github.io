@@ -1,4 +1,4 @@
-function FirefeedSearch(ref, stem, resultsHandler) {
+function PublicPredictionsSearch(ref, stem, resultsHandler) {
   this._ref = ref;
   this._term = stem;
   this._stems = this._generateStems(stem);
@@ -9,7 +9,7 @@ function FirefeedSearch(ref, stem, resultsHandler) {
   this._startSearch();
 }
 
-FirefeedSearch.prototype = {
+PublicPredictionsSearch.prototype = {
   _generateStems: function(stem) {
     stem = stem.substr(0, 3).toLowerCase();
     var stems = [stem];
@@ -85,7 +85,7 @@ FirefeedSearch.prototype = {
   }
 };
 
-FirefeedSearch.prototype.containsTerm = function(term) {
+PublicPredictionsSearch.prototype.containsTerm = function(term) {
   if (term.length < 3) {
     return false;
   } else {
@@ -99,12 +99,12 @@ FirefeedSearch.prototype.containsTerm = function(term) {
   }
 };
 
-FirefeedSearch.prototype.updateTerm = function(term) {
+PublicPredictionsSearch.prototype.updateTerm = function(term) {
   this._term = term;
   this._raiseFilteredResults();
 };
 
-FirefeedSearch.prototype.stopSearch = function() {
+PublicPredictionsSearch.prototype.stopSearch = function() {
   for (var i = 0; i < this._handles.length; ++i) {
     var handle = this._handles[i];
     handle.firstName.query.off('child_added', handle.firstName.handle);

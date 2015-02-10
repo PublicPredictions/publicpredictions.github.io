@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1, user-scalable=no" />
-    <title>Firefeed - About</title>
+    <title>PublicPredictions - About</title>
     <meta name="description" content="An open source Twitter clone built with Firebase">
     <link href="img/favicon.png" rel="shortcut icon" />
     <link href="img/apple-touch-icon.png" rel="apple-touch-icon" />
@@ -21,7 +21,7 @@
     <div id="wrapper">
 
       <header id="header">
-        <a target="_blank" href="http://github.com/firebase/firefeed" class="ribbon-github">
+        <a target="_blank" href="http://github.com/firebase/publicpredictions" class="ribbon-github">
           <img src="img/ribbon-github.png" alt="Fork me on GitHub" />
         </a>
         <a target="_blank" href="http://firebase.github.io" class="ribbon-curl">
@@ -32,20 +32,20 @@
       <div id="content">
         <div class="wrapper">
           <div class="row">
-            <a href="http://firefeed.io"><img src="img/wordmark-large.png" alt="Firefeed" /></a>
+            <a href="http://publicpredictions.io"><img src="img/wordmark-large.png" alt="PublicPredictions" /></a>
             <h2 class="subheading">
-              An <a target="_blank" href="http://github.com/firebase/firefeed">open source</a>
+              An <a target="_blank" href="http://github.com/firebase/publicpredictions">open source</a>
               Twitter clone built with <a target="_blank" href="https://firebase.com/">Firebase</a>.
             </h2>
             <hr/>
             <div class="about">
               <h2>Overview</h2>
               <p>
-                Firefeed is an application modeled after <a target="_blank" href="http://twitter.com">Twitter</a>.
+                PublicPredictions is an application modeled after <a target="_blank" href="http://twitter.com">Twitter</a>.
                 You can post 141 character messages, follow other users, and view messages as soon as they are posted.
               </p>
               <p>
-                So what's special about Firefeed?
+                So what's special about PublicPredictions?
                 <ul>
                   <li><span class="bold">It's an entirely client side app</span>.<br/><br/>
                   No server logic or servers are needed.
@@ -57,17 +57,17 @@
 
                   <li><span class="bold">The core logic is less than 500 lines of code</span>.<br/><br/>
                   Excluding the user interface, all the application logic is in two files:
-                  <a target="_blank" href="http://github.com/firebase/firefeed/blob/master/www/js/firefeed.js">firefeed.js</a>
+                  <a target="_blank" href="http://github.com/firebase/publicpredictions/blob/master/www/js/publicpredictions.js">publicpredictions.js</a>
                   and
-                  <a target="_blank" href="http://github.com/firebase/firefeed/blob/master/rules.json">rules.json</a>.
+                  <a target="_blank" href="http://github.com/firebase/publicpredictions/blob/master/rules.json">rules.json</a>.
                   The former contains a thin abstraction over the data stored in Firebase, and the latter is
-                  a small JSON file containing <span class="italic">all</span> the security rules that Firefeed
+                  a small JSON file containing <span class="italic">all</span> the security rules that PublicPredictions
                   must adhere by.</li>
                 </ul>
               </p>
               <p>
-                Firefeed is made possible by <a target="_blank" href="http://firebase.com">Firebase</a>,
-                a scalable real-time backend with a simple JS API.  All Firefeed messages are stored there, and the API is used to update every user's feed with the latest messages in realtime. Firebase also has a rules language, that allows the developer to enforce certain security requirements.
+                PublicPredictions is made possible by <a target="_blank" href="http://firebase.com">Firebase</a>,
+                a scalable real-time backend with a simple JS API.  All PublicPredictions messages are stored there, and the API is used to update every user's feed with the latest messages in realtime. Firebase also has a rules language, that allows the developer to enforce certain security requirements.
               </p>
               <p><span class="italic">Sound interesting?</span> Let's delve into the details. We'll assume you know a little
                 about Firebase and how data is stored in it. Be sure to read through
@@ -87,13 +87,13 @@
                 <a target="_blank" href="https://www.firebase.com/docs/security/simple-login-facebook.html">configured</a>
                 our Firebase, we entered our Facebook application ID and
                 secret. Thus, Firebase can be assured that the token could only have
-                been produced by Firefeed, the app that the user agreed to log into.</p>
+                been produced by PublicPredictions, the app that the user agreed to log into.</p>
               <p>Firebase can take care of this whole process for us, so we'll
               simply import the authentication library and make a couple of function
               calls:</p>
               <pre class="prettyprint lang_js">
 
-var firebase = new Firebase("https://firefeed.firebaseio.com/");
+var firebase = new Firebase("https://publicpredictions.firebaseio.com/");
 
 // monitor state changes and react to updates
 var authClient = new FirebaseSimpleLogin(chatRef, function(error, user) {
@@ -125,7 +125,7 @@ authClient.login('facebook');</pre><br/>
               </p>
 
               <h4>Characteristics</h4>
-              <p>Let's list out the basic characteristics that we want Firefeed to have (we'll call
+              <p>Let's list out the basic characteristics that we want PublicPredictions to have (we'll call
                 every message in our system a <span class="italic">spark</span>):</p>
               <ul>
                 <li>All sparks are readable by anyone, even users who 
@@ -282,7 +282,7 @@ authClient.login('facebook');</pre><br/>
             refers to the data that will be written if the rule succeeds.</p>
             <p>Phew - we're done with the rules! The hardest part is behind us
               now, when it's all put together, it makes a small 60 line
-              <a target="_blank" href="http://github.com/firebase/firefeed/blob/master/rules.json">JSON file</a>.
+              <a target="_blank" href="http://github.com/firebase/publicpredictions/blob/master/rules.json">JSON file</a>.
               Now Firebase will ensure that no data will be written where it wasn't meant to.</p>
 
             <hr/>
@@ -411,7 +411,7 @@ A users feed and a user’s sparks will just be a list of spark IDs. The actual 
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
   
-      ga('create', 'UA-37029006-1', 'firefeed.io');
+      ga('create', 'UA-37029006-1', 'publicpredictions.io');
       ga('send', 'pageview');
     </script>        
   </body>
