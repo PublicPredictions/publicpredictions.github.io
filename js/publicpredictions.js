@@ -662,3 +662,23 @@ PublicPredictions.prototype.unload = function() {
   }
   this._handlers = [];
 };
+
+
+// Facebook Auth
+var firebase = new Firebase("https://firefeed.firebaseio.com/");
+
+// monitor state changes and react to updates
+var authClient = new FirebaseSimpleLogin(chatRef, function(error, user) {
+    if (error) {
+        // an error occurred while attempting login
+        console.log(error);
+    } else if (user) {
+        // user authenticated with Firebase
+        console.log('User ID: ' + user.id + ', Provider: ' + user.provider);
+    } else {
+        // user is logged out
+    }
+});
+
+// perform the login (to Facebook in this case)
+authClient.login('facebook');
