@@ -665,7 +665,7 @@ PublicPredictions.prototype.unload = function() {
 
 
 // Facebook Auth
-var firebase = new Firebase("https://firefeed.firebaseio.com/");
+var firebase = new Firebase("https://publicpredicitions.firebaseio.com/");
 
 // monitor state changes and react to updates
 var authClient = new FirebaseSimpleLogin(chatRef, function(error, user) {
