@@ -31,7 +31,7 @@ PublicPredictionsUI.prototype._setupHandlers = function() {
     e.preventDefault();
     self._go($(this).attr("href"));
   });
-  $(document).on("click", "a.spark-link", function(e) {
+  $(document).on("click", "a.prediction-link", function(e) {
     e.preventDefault();
     self._go($(this).attr("href"));
   });
@@ -69,11 +69,11 @@ PublicPredictionsUI.prototype._pageController = function(url) {
         this._unload = this.renderProfile(value[1]);
       }
       break;
-    case "spark":
+    case "prediction":
       if (!value[1]) {
         this._unload = this.render404();
       } else {
-        this._unload = this.renderSpark(value[1]);
+        this._unload = this.renderPrediction(value[1]);
       }
       break;
     case "search":
@@ -90,19 +90,19 @@ PublicPredictionsUI.prototype._pageController = function(url) {
 };
 
 PublicPredictionsUI.prototype._postHandler = function(e) {
-  var sparkText = $("#spark-input");
-  var sparkButton = $("#spark-button");
-  var containerEl = $("#spark-button-div");
+  var predictionText = $("#prediction-input");
+  var predictionButton = $("#prediction-button");
+  var containerEl = $("#prediction-button-div");
   var message = $("<div>").addClass("msg").html("Posting...");
 
   var self = this;
   e.preventDefault();
-  sparkButton.replaceWith(message);
+  predictionButton.replaceWith(message);
   self._spinner.spin(containerEl.get(0));
-  self._publicpredictions.post(sparkText.val(), function(err, done) {
+  self._publicpredictions.post(predictionText.val(), function(err, done) {
     if (!err) {
       message.html("Posted!").css("background", "#008000");
-      sparkText.val("");
+      predictionText.val("");
     } else {
       message.html("Posting failed!").css("background", "#FF6347");
     }
@@ -110,28 +110,28 @@ PublicPredictionsUI.prototype._postHandler = function(e) {
     $("#c-count").val(self._limit);
     message.css("visibility", "visible");
     message.fadeOut(1500, function() {
-      message.replaceWith(sparkButton);
-      sparkButton.click(self._postHandler.bind(self));
+      message.replaceWith(predictionButton);
+      predictionButton.click(self._postHandler.bind(self));
     });
   });
 };
 
-PublicPredictionsUI.prototype._handleNewSpark = function(listId, limit, func) {
+PublicPredictionsUI.prototype._handleNewPrediction = function(listId, limit, func) {
   var self = this;
   func(
     limit,
-    function(sparkId, spark) {
-      spark.content = spark.content.substring(0, self._limit);
-      spark.sparkId = sparkId;
-      spark.friendlyTimestamp = self._formatDate(
-        new Date(spark.timestamp || 0)
+    function(predictionId, prediction) {
+      prediction.content = prediction.content.substring(0, self._limit);
+      prediction.predictionId = predictionId;
+      prediction.friendlyTimestamp = self._formatDate(
+        new Date(prediction.timestamp || 0)
       );
-      var sparkEl = $(Mustache.to_html($("#tmpl-spark").html(), spark)).hide();
-      $("#" + listId).prepend(sparkEl);
-      sparkEl.slideDown("slow");
-    }, function(sparkId) {
+      var predictionEl = $(Mustache.to_html($("#tmpl-prediction").html(), prediction)).hide();
+      $("#" + listId).prepend(predictionEl);
+      predictionEl.slideDown("slow");
+    }, function(predictionId) {
       setTimeout(function() {
-        $("#spark-" + sparkId).stop().slideToggle("slow", function() {
+        $("#prediction-" + predictionId).stop().slideToggle("slow", function() {
           $(this).remove();
         });
       }, 100);
@@ -226,10 +226,10 @@ PublicPredictionsUI.prototype.renderHome = function(e) {
 
   $("#about-link").remove();
 
-  // Attach handler to display the latest 5 sparks.
-  self._handleNewSpark(
-    "spark-index-list", 5,
-    self._publicpredictions.onLatestSpark.bind(self._publicpredictions)
+  // Attach handler to display the latest 5 predictions.
+  self._handleNewPrediction(
+    "prediction-index-list", 5,
+    self._publicpredictions.onLatestPrediction.bind(self._publicpredictions)
   );
   return function() { self._publicpredictions.unload(); };
 };
@@ -284,32 +284,32 @@ PublicPredictionsUI.prototype.renderTimeline = function(info) {
 
   // Attach textarea handlers.
   var charCount = $("#c-count");
-  var sparkText = $("#spark-input");
-  $("#spark-button").css("visibility", "hidden");
+  var predictionText = $("#prediction-input");
+  $("#prediction-button").css("visibility", "hidden");
   function _textAreaHandler() {
-    var text = sparkText.val();
+    var text = predictionText.val();
     charCount.text("" + (self._limit - text.length));
     if (text.length > self._limit) {
       charCount.css("color", "#FF6347");
-      $("#spark-button").css("visibility", "hidden");
+      $("#prediction-button").css("visibility", "hidden");
     } else if (text.length == 0) {
-      $("#spark-button").css("visibility", "hidden");
+      $("#prediction-button").css("visibility", "hidden");
     } else {
       charCount.css("color", "#999");
-      $("#spark-button").css("visibility", "visible");
+      $("#prediction-button").css("visibility", "visible");
     }
   }
   charCount.text(self._limit);
-  sparkText.keyup(_textAreaHandler);
-  sparkText.blur(_textAreaHandler);
+  predictionText.keyup(_textAreaHandler);
+  predictionText.blur(_textAreaHandler);
 
-  // Attach post spark button.
-  $("#spark-button").click(self._postHandler.bind(self));
+  // Attach post prediction button.
+  $("#prediction-button").click(self._postHandler.bind(self));
 
-  // Attach new spark event handler, capped to 10 for now.
-  self._handleNewSpark(
-    "spark-timeline-list", 10,
-    self._publicpredictions.onNewSpark.bind(self._publicpredictions)
+  // Attach new prediction event handler, capped to 10 for now.
+  self._handleNewPrediction(
+    "prediction-timeline-list", 10,
+    self._publicpredictions.onNewPrediction.bind(self._publicpredictions)
   );
 
   // Get some "suggested" users.
@@ -402,29 +402,29 @@ PublicPredictionsUI.prototype.renderProfile = function(uid) {
   });
 
   // Render this user's tweets. Capped to 5 for now.
-  self._handleNewSpark(
-    "spark-profile-list", 5,
-    self._publicpredictions.onNewSparkFor.bind(self._publicpredictions, uid)
+  self._handleNewPrediction(
+    "prediction-profile-list", 5,
+    self._publicpredictions.onNewPredictionFor.bind(self._publicpredictions, uid)
   );
   return function() { self._publicpredictions.unload(); };
 };
 
-PublicPredictionsUI.prototype.renderSpark = function(id) {
+PublicPredictionsUI.prototype.renderPrediction = function(id) {
   var self = this;
   $("#header").html(Mustache.to_html($("#tmpl-page-header").html(), {user: self._loggedIn}));
 
-  // Render spark page body.
-  self._publicpredictions.getSpark(id, function(spark) {
-    if (spark !== null && spark.author) {
-      self._publicpredictions.getUserInfo(spark.author, function(authorInfo) {
+  // Render prediction page body.
+  self._publicpredictions.getPrediction(id, function(prediction) {
+    if (prediction !== null && prediction.author) {
+      self._publicpredictions.getUserInfo(prediction.author, function(authorInfo) {
         for (var key in authorInfo) {
-          spark[key] = authorInfo[key];
+          prediction[key] = authorInfo[key];
         }
-        spark.content = spark.content.substring(0, self._limit);
-        spark.friendlyTimestamp = self._formatDate(
-          new Date(spark.timestamp || 0)
+        prediction.content = prediction.content.substring(0, self._limit);
+        prediction.friendlyTimestamp = self._formatDate(
+          new Date(prediction.timestamp || 0)
         );
-        var content = Mustache.to_html($("#tmpl-spark-content").html(), spark);
+        var content = Mustache.to_html($("#tmpl-prediction-content").html(), prediction);
         var body = Mustache.to_html($("#tmpl-content").html(), {
           classes: "cf", content: content
         });

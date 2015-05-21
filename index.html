@@ -70,7 +70,7 @@
           <hr/>
 
           <h2 class="subheading">Latest Predictions</h2>
-          <ul id="spark-index-list" class="item-list">
+          <ul id="prediction-index-list" class="item-list">
           </ul>
         </div>
       </script>
@@ -92,11 +92,11 @@
             </div>
           </div>
           <div class="field">
-            <textarea id="spark-input" class="text" rows="4" cols="10" placeholder="Share a prediction (e.g. 'Personal quantum computers will outsell others by 2115.')"></textarea>
+            <textarea id="prediction-input" class="text" rows="4" cols="10" placeholder="Share a prediction (e.g. 'Personal quantum computers will outsell others by 2115.')"></textarea>
           </div>
           <small class="field-help"><span id="c-count"></span> characters remaining</small>
-          <div id="spark-button-div">
-            <a id="spark-button" href="#" class="btn default full pushv4">Publish Prediction</a>
+          <div id="prediction-button-div">
+            <a id="prediction-button" href="#" class="btn default full pushv4">Publish Prediction</a>
           </div>
 
           <div class="separator pushv4"></div>
@@ -106,7 +106,7 @@
           </div>
         </div>
         <div class="twothird">
-          <ul id="spark-timeline-list" class="item-list">
+          <ul id="prediction-timeline-list" class="item-list">
           </ul>
         </div>
       </script>
@@ -138,7 +138,7 @@
         {{/results}}
       </script>
 
-      <script id="tmpl-spark-content" type="text/html">
+      <script id="tmpl-prediction-content" type="text/html">
         <div class="threefifth center aligncenter pushdn4">
           <div class="comment pushv6">
             <div class="huge-copy pushv2">{{content}}</div>
@@ -158,7 +158,7 @@
             <div id="profile-content">
             </div>
           </div>
-          <ul id="spark-profile-list" class="item-list third left"></ul>
+          <ul id="prediction-profile-list" class="item-list third left"></ul>
           <br/>
           <div class="profile-column profile-column-left">
             <h3>Followers</h3>
@@ -202,8 +202,8 @@
         </div>
       </script>
 
-      <script id="tmpl-spark" type="text/html">
-        <li id="spark-{{sparkId}}">
+      <script id="tmpl-prediction" type="text/html">
+        <li id="prediction-{{predictionId}}">
           <div class="media">
             <div class="img avatar clean">
               <a class="profile-link" href="/?profile={{author}}">
@@ -216,7 +216,7 @@
               </p>
               <p class="main-copy pushv">{{content}}</p>
               <p class="meta end">
-                <a class="spark-link" href="?spark={{sparkId}}">{{friendlyTimestamp}}</a>
+                <a class="prediction-link" href="?prediction={{predictionId}}">{{friendlyTimestamp}}</a>
               </p>
             </div>
           </div>

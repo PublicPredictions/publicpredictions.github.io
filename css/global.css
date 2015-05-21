@@ -542,11 +542,11 @@ label.checkbox input{margin-right: 5px;}
   min-height: 200px;
 }
 
-#spark-button-div{
+#prediction-button-div{
   height: 50px;
 }
 
-#spark-profile-list {
+#prediction-profile-list {
   width: 100%;
 }
 

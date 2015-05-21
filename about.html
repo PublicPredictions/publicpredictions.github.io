@@ -126,18 +126,18 @@ authClient.login('facebook');</pre><br/>
 
               <h4>Characteristics</h4>
               <p>Let's list out the basic characteristics that we want PublicPredictions to have (we'll call
-                every message in our system a <span class="italic">spark</span>):</p>
+                every message in our system a <span class="italic">prediction</span>):</p>
               <ul>
-                <li>All sparks are readable by anyone, even users who 
-                  aren't logged in. Sparks cannot be posted without logging in.</li>
-                <li>All sparks are non-mutable, so they cannot be modified, even
+                <li>All predictions are readable by anyone, even users who 
+                  aren't logged in. Predictions cannot be posted without logging in.</li>
+                <li>All predictions are non-mutable, so they cannot be modified, even
                   by the user that created them once they've been posted.</li>
-                <li>Every user has their own list of sparks posted, and nobody should
+                <li>Every user has their own list of predictions posted, and nobody should
                   be able to add to this list but the user.</li>
                 <li>Every user has their own feed, which is a combined list of all
-                  sparks posted by them, and by all the users that they are following.
-                  No other sparks must appear in this feed.</li>
-                <li>Every spark post should be attributed to the currently logged in
+                  predictions posted by them, and by all the users that they are following.
+                  No other predictions must appear in this feed.</li>
+                <li>Every prediction post should be attributed to the currently logged in
                   user, and users should not be able to spoof one another.</li>
               </ul>
               <p>Let's translate these requirements into a set of rules! We'll have
@@ -145,9 +145,9 @@ authClient.login('facebook');</pre><br/>
                 <ul>
                   <li><code>people</code>: A list of registered users.</li>
                   <li><code>users</code>: A dictionary containing a key for
-                  every user which will contain their personal data (spark list
+                  every user which will contain their personal data (prediction list
                   and feed).</li>
-                  <li><code>sparks</code>: A global list of sparks posted on
+                  <li><code>predictions</code>: A global list of predictions posted on
                   the site along with their metadata.</li>
                 </ul>
               <h4>The Rules</h4>
@@ -189,7 +189,7 @@ authClient.login('facebook');</pre><br/>
             <p>
               Now, every user should be able to write into their own personal data
               bucket. Let's have every user bucket contain three properties:
-              (1) a list of sparks posted by them, (2) a list of users they follow, and (3) a list of users who follow them. If you're wondering why we chose this particular structure, hold that thought, we'll come back to it in a minute!
+              (1) a list of predictions posted by them, (2) a list of users they follow, and (3) a list of users who follow them. If you're wondering why we chose this particular structure, hold that thought, we'll come back to it in a minute!
             </p>
             <pre class="prettyprint lang_js">
 
@@ -221,10 +221,10 @@ authClient.login('facebook');</pre><br/>
 
     {
       feed: {
-        "$sparkid": {
+        "$predictionid": {
           ".write":
             root.child('users/' + $userid + '/following').hasChild(auth.id) &&
-            root.child('sparks/' + $sparkid + '/author').val() == auth.id
+            root.child('predictions/' + $predictionid + '/author').val() == auth.id
         }
       }
     }</pre><br/>
@@ -233,9 +233,9 @@ authClient.login('facebook');</pre><br/>
             <p>The first rule specifies that only the people followed by a particular
               user are able to write to that user's feed. For example, if user A
               follows user B, user B can write to user A's feed. The second rule
-              checks if the author of the spark
+              checks if the author of the prediction
               being written is the same as the user who's trying to do the write.
-              This means that user B can only write sparks authored by themselves into
+              This means that user B can only write predictions authored by themselves into
               user A's feed.
             </p>
             <p>Now let's make sure that every user in the <code>following</code>
@@ -257,15 +257,15 @@ authClient.login('facebook');</pre><br/>
       }
     }</pre><br/>
             <p>We're almost there! We'll need to define the rules for the global
-              sparks list. We need to ensure is that every spark is formatted a
-              certain way, that sparks cannot be modified once posted, and that
-              only the author of a spark is able to add it to the global list:
+              predictions list. We need to ensure is that every prediction is formatted a
+              certain way, that predictions cannot be modified once posted, and that
+              only the author of a prediction is able to add it to the global list:
             </p>
             <pre class="prettyprint lang_js">
 
     {
-      sparks: {
-        $sparkid: {
+      predictions: {
+        $predictionid: {
           ".write": !data.exists(),
           ".validate": newData.hasChildren(['author', 'content']),
           author: {
@@ -289,26 +289,26 @@ authClient.login('facebook');</pre><br/>
             <h3>Application Logic</h3>
 
             <p>Let's come back to why we decided on this data structure:
-A users feed and a user’s sparks will just be a list of spark IDs. The actual spark data will be stored in a global spark list. When a new spark is posted, we’ll it in the global list, and then put its ID in the feed of every user that is following the author.</p> 
+A users feed and a user’s predictions will just be a list of prediction IDs. The actual prediction data will be stored in a global prediction list. When a new prediction is posted, we’ll it in the global list, and then put its ID in the feed of every user that is following the author.</p> 
 
 <pre class="prettyprint lang_js">
 
   var userid = info.id; // info is from the login() call earlier.
-  var sparkRef = firebase.child("sparks").push();
-  var sparkRefId = sparkRef.name();
+  var predictionRef = firebase.child("predictions").push();
+  var predictionRefId = predictionRef.name();
 
-  // Add spark to global list.
-  sparkRef.set(spark);
+  // Add prediction to global list.
+  predictionRef.set(prediction);
 
-  // Add spark ID to user's list of posted sparks.
+  // Add prediction ID to user's list of posted predictions.
   var currentUser = firebase.child("users").child(userid);
-  currentUser.child("sparks").child(sparkRefId).set(true);
+  currentUser.child("predictions").child(predictionRefId).set(true);
 
-  // Add spark ID to the feed of everyone following this user.
+  // Add prediction ID to the feed of everyone following this user.
   currentUser.child("followers").once("value", function(list) {
     list.forEach(function(follower) {
       var childRef = firebase.child("users").child(follower.name());
-      childRef.child("feed").child(sparkRefId).set(true);
+      childRef.child("feed").child(predictionRefId).set(true);
     });
   });
     </pre><br/>
@@ -321,16 +321,16 @@ A users feed and a user’s sparks will just be a list of spark IDs. The actual 
 
   var feed = firebase.child("users").child(userid).child("feed");
   feed.on("child_added", function(snapshot) {
-    var sparkID = snapshot.name();
-    var sparkRef = firebase.child("sparks").child(sparkID);
-    sparkRef.on("value", function(spark) {
-      // Render the spark into the user's feed.
+    var predictionID = snapshot.name();
+    var predictionRef = firebase.child("predictions").child(predictionID);
+    predictionRef.on("value", function(prediction) {
+      // Render the prediction into the user's feed.
     });
   });</pre><br/>
           <p>
             With Firebase <a target="_blank" href="http://www.firebase.com/docs/queries.html">queries and limits</a>,
             we can also limit the output to the latest
-            100 sparks so we don't fetch any more data than is needed,
+            100 predictions so we don't fetch any more data than is needed,
             further improving our performance.
           </p>
 
@@ -344,10 +344,10 @@ A users feed and a user’s sparks will just be a list of spark IDs. The actual 
             <ul>
               <li>Implement unfollowing a user.</li>
               <li>Implement protected accounts. If a user opts into a protected account, their
-                sparks can only be viewed by people they approve.</li>
+                predictions can only be viewed by people they approve.</li>
               <li>Implement search based on #hashtags. Hint: Instead of searching for the
-                actual value through the global list of sparks, consider creating a new
-                bucket for every hashtag when it is first used, and then populating it with spark
+                actual value through the global list of predictions, consider creating a new
+                bucket for every hashtag when it is first used, and then populating it with prediction
                 references.</li>
               <li>Implement retweets, favorites and @ messages to other users. (Hint: You
                 can put the @ messages in the correct place at creation time).</li>
