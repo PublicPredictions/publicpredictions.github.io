@@ -270,8 +270,6 @@ PublicPredictionsUI.prototype.renderTimeline = function(info) {
   $("#header").html(Mustache.to_html($("#tmpl-page-header").html(), {user: self._loggedIn}));
 
   // Render placeholders for location / bio if not filled in.
-  console.log("Location: " + info.location.substr(0,80));
-  console.log("Bio: " + info.bio.substr(0,141));
   info.location = info.location.substr(0, 80) || "Your Location...";
   info.bio = info.bio.substr(0, 141) || "Your Bio...";
 
